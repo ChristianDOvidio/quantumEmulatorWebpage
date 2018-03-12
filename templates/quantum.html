@@ -98,29 +98,50 @@
 		function drop(ev) {
 			ev.preventDefault();
 			var data = ev.dataTransfer.getData("text");
-			//alert(data);
 			if (String(data) == "destDiv1" || String(data) == "destDiv2" || String(data) == "destDiv3" ||
 				String(data) == "destDiv4" || String(data) == "destDiv5") {
-				//ev.target.appendChild(document.getElementById(data));
-				//ev.dataTransfer.dropEffect = "move"
+				//only allow destDivs to be dropped in
 				(document.getElementById(data).getElementsByTagName('img')[0]).remove();
+
+				//change value of dropdown
+				var str = data + "Drop";
+				document.getElementById(str).value = "";
+			}
+		}
+
+		function dropDownChange(source) {
+			var str = source.id
+			str = str.substring(0, str.length - 4);
+			if (document.getElementById(str).getElementsByTagName('img')[0]) {
+				(document.getElementById(str).getElementsByTagName('img')[0]).remove();
+				//only remove existing images
+			}
+			if (source.value != "") {
+				//only assign non null images
+				var nodeCopy = document.getElementById(source.value).cloneNode(true);
+				nodeCopy.id = str;
+				document.getElementById(str).appendChild(nodeCopy);
 			}
 		}
 
 		function copyDrop(ev) {
 			ev.preventDefault();
 			var data = ev.dataTransfer.getData("text");
-			var nodeCopy = document.getElementById(data).cloneNode(true);
-			nodeCopy.id = ev.target.id;
-			ev.target.appendChild(nodeCopy);
-		}
+			if (String(data) != "destDiv1" && String(data) != "destDiv2" && String(data) != "destDiv3" &&
+				String(data) != "destDiv4" && String(data) != "destDiv5") {
+				//only allow source divs to drop
+				var nodeCopy = document.getElementById(data).cloneNode(true);
+				nodeCopy.id = ev.target.id;
+				ev.target.appendChild(nodeCopy);
 
-		function destClick(ev) {
-			alert("Click");
-			alert(ev.target.id);
+				//change value of dropdown
+				var str = ev.target.id + "Drop";
+				document.getElementById(str).value = data;
+			}
 		}
 
 		function gateParse(p) {
+			//get name of gates
 			return (((((document.getElementById(p)).getElementsByTagName('img')[0]).src).replace(/^.*[\\\/]/, '')).slice(0, -4));
 		}
 
@@ -235,9 +256,7 @@ It is the square root of the NOT gate." id="sourceDiv">
 			</td>
 			<td>
 				<!--R1C3 -->
-				<div id="destDiv1" class="blankBack" style="width:90px; height:90px; padding:0px; border:0px;" ondrop="copyDrop(event)" ondragover="allowDrop(event)"
-				 onclick="destClick(event)">
-				</div>
+				<div id="destDiv1" class="blankBack" style="width:90px; height:90px; padding:0px; border:0px;" ondrop="copyDrop(event)" ondragover="allowDrop(event)"></div>
 			</td>
 			<td>
 				<!--R1C4 -->
@@ -245,9 +264,7 @@ It is the square root of the NOT gate." id="sourceDiv">
 			</td>
 			<td>
 				<!--R1C5 -->
-				<div id="destDiv2" class="blankBack" style="width:90px; height:90px; padding:0px; border:0px;" ondrop="copyDrop(event)" ondragover="allowDrop(event)"
-				 onclick="destClick(event)">
-				</div>
+				<div id="destDiv2" class="blankBack" style="width:90px; height:90px; padding:0px; border:0px;" ondrop="copyDrop(event)" ondragover="allowDrop(event)"></div>
 			</td>
 			<td>
 				<!--R1C6 -->
@@ -255,9 +272,7 @@ It is the square root of the NOT gate." id="sourceDiv">
 			</td>
 			<td>
 				<!--R1C7 -->
-				<div id="destDiv3" class="blankBack" style="width:90px; height:90px; padding:0px; border:0px;" ondrop="copyDrop(event)" ondragover="allowDrop(event)"
-				 onclick="destClick(event)">
-				</div>
+				<div id="destDiv3" class="blankBack" style="width:90px; height:90px; padding:0px; border:0px;" ondrop="copyDrop(event)" ondragover="allowDrop(event)"></div>
 			</td>
 			<td>
 				<!--R1C8 -->
@@ -265,9 +280,7 @@ It is the square root of the NOT gate." id="sourceDiv">
 			</td>
 			<td>
 				<!--R1C9 -->
-				<div id="destDiv4" class="blankBack" style="width:90px; height:90px; padding:0px; border:0px;" ondrop="copyDrop(event)" ondragover="allowDrop(event)"
-				 onclick="destClick(event)">
-				</div>
+				<div id="destDiv4" class="blankBack" style="width:90px; height:90px; padding:0px; border:0px;" ondrop="copyDrop(event)" ondragover="allowDrop(event)"></div>
 			</td>
 			<td>
 				<!--R1C10 -->
@@ -275,9 +288,7 @@ It is the square root of the NOT gate." id="sourceDiv">
 			</td>
 			<td>
 				<!--R1C11 -->
-				<div id="destDiv5" class="blankBack" style="width:90px; height:90px; padding:0px; border:0px;" ondrop="copyDrop(event)" ondragover="allowDrop(event)"
-				 onclick="destClick(event)">
-				</div>
+				<div id="destDiv5" class="blankBack" style="width:90px; height:90px; padding:0px; border:0px;" ondrop="copyDrop(event)" ondragover="allowDrop(event)"></div>
 			</td>
 			<td>
 				<!--R1C12 -->
@@ -285,7 +296,7 @@ It is the square root of the NOT gate." id="sourceDiv">
 			</td>
 			<td>
 				<!--R1C13 -->
-				<input id="resultDiv " type="text " value="{{ output }} " style="width:90px; height:90px; " readonly>
+				<input id="resultDiv" type="text " value="{{ output }} " style="width:90px; height:90px; " readonly>
 			</td>
 		</tr>
 		<tr>
@@ -297,30 +308,70 @@ It is the square root of the NOT gate." id="sourceDiv">
 			</td>
 			<td>
 				<!--R2C3-->
+				<select id="destDiv1Drop" name="Select a Gate" onchange="dropDownChange(this)">
+					<option value="">None</option>
+					<option value="pauliX">Pauli-X</option>
+					<option value="pauliY">Pauli-Y</option>
+					<option value="pauliZ">Pauli-Z</option>
+					<option value="hadamard">Hadamard</option>
+					<option value="sqrtNot">Sqrt Not</option>
+				</select>
 			</td>
 			<td>
 				<!--R2C4-->
 			</td>
 			<td>
 				<!--R2C5-->
+				<select id="destDiv2Drop" name="Select a Gate" onchange="dropDownChange(this)">
+					<option value="">None</option>
+					<option value="pauliX">Pauli-X</option>
+					<option value="pauliY">Pauli-Y</option>
+					<option value="pauliZ">Pauli-Z</option>
+					<option value="hadamard">Hadamard</option>
+					<option value="sqrtNot">Sqrt Not</option>
+				</select>
 			</td>
 			<td>
 				<!--R2C6-->
 			</td>
 			<td>
 				<!--R2C7-->
+				<select id="destDiv3Drop" name="Select a Gate" onchange="dropDownChange(this)">
+					<option value="">None</option>
+					<option value="pauliX">Pauli-X</option>
+					<option value="pauliY">Pauli-Y</option>
+					<option value="pauliZ">Pauli-Z</option>
+					<option value="hadamard">Hadamard</option>
+					<option value="sqrtNot">Sqrt Not</option>
+				</select>
 			</td>
 			<td>
 				<!--R2C8-->
 			</td>
 			<td>
 				<!--R2C9-->
+				<select id="destDiv4Drop" name="Select a Gate" onchange="dropDownChange(this)">
+					<option value="">None</option>
+					<option value="pauliX">Pauli-X</option>
+					<option value="pauliY">Pauli-Y</option>
+					<option value="pauliZ">Pauli-Z</option>
+					<option value="hadamard">Hadamard</option>
+					<option value="sqrtNot">Sqrt Not</option>
+				</select>
 			</td>
 			<td>
 				<!--R2C10-->
 			</td>
 			<td>
 				<!--R2C11-->
+				<select id="destDiv5Drop" name="Select a Gate" onchange="dropDownChange(this)">
+					<option value="">None</option>
+					<option value="pauliX">Pauli-X</option>
+					<option value="pauliY">Pauli-Y</option>
+					<option value="pauliZ">Pauli-Z</option>
+					<option value="hadamard">Hadamard</option>
+					<option value="sqrtNot">Sqrt Not</option>
+				</select>
 			</td>
 			<td>
 				<!--R2C12-->
